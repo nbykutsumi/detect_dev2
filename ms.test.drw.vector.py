@@ -6,7 +6,7 @@ import os, sys
 import myfunc.IO.JRA55 as JRA55
 import util
 
-Year = 2006
+Year = 2004
 lMon = range(1,12+1)
 #lMon = [1]
 ny, nx= 145, 288
@@ -55,8 +55,8 @@ def f_draw(U, V, scale, stitle, oPath):
     print oPath
 
 
-def load_var(var, Year, Mon):
-  sPath = os.path.join(baseDir,var,str(Year),"%s.mean.%04d%02d.145x288"%(var,Year,Mon))
+def load_var(var, plev, Year, Mon):
+  sPath = os.path.join(baseDir,var,str(Year),"%s.mean.%04dhPa.%04d%02d.145x288"%(var,plev,Year,Mon))
 
   a2var = fromfile(sPath, float32).reshape(ny,nx)
   return a2var
@@ -78,7 +78,7 @@ for Mon in lMon:
     f_draw( U, V, scale, stitle, oPath)
 
 """
-
+"""
 # diff Q*Wind
 Uref = vstack([
         array([load_var("q.ugrd",Year,Mon)
@@ -103,42 +103,48 @@ for Mon in lMon:
     stitle = "d(q*wind) %04d %02d - DJF(JJA)"%(Year,Mon)
     oPath  = os.path.join(figdir,"d.qwind.%04d.%02d.png"%(Year,Mon))
     f_draw( U, V, scale, stitle, oPath)
+"""
 
 """
 # Wind
+plev   = 500
+#plev   = 850
 for Mon in lMon:
-    U    = load_var("ugrd", Year,Mon)
-    V    = load_var("vgrd", Year,Mon)
+    U    = load_var("ugrd", plev, Year,Mon)
+    V    = load_var("vgrd", plev, Year,Mon)
     scale = 0.7
     
-    stitle = "wind %04d %02d"%(Year,Mon)
-    oPath  = os.path.join(figdir,"wind.%04d.%02d.png"%(Year,Mon))
+    stitle = "wind %04dhPa %04d %02d"%(plev, Year,Mon)
+    oPath  = os.path.join(figdir,"wind.%04dhPa.%04d.%02d.png"%(plev,Year,Mon))
     f_draw( U, V, scale, stitle, oPath)
 """
+#"""
 
 # diff Wind
-
+#plev = 500
+plev = 850
 Uref = vstack([
-        array([load_var("ugrd",Year,Mon)
+        array([load_var("ugrd",plev,Year,Mon)
             for Mon in [6,7,8]]).mean(axis=0)[:ny/2]
-       ,array([load_var("ugrd",Year,Mon)
+       ,array([load_var("ugrd",plev,Year,Mon)
             for Mon in [1,2,12]]).mean(axis=0)[ny/2:]
             ])
 
 Vref = vstack([
-        array([load_var("vgrd",Year,Mon)
+        array([load_var("vgrd",plev,Year,Mon)
             for Mon in [6,7,8]]).mean(axis=0)[:ny/2]
-       ,array([load_var("vgrd",Year,Mon)
+       ,array([load_var("vgrd",plev,Year,Mon)
             for Mon in [1,2,12]]).mean(axis=0)[ny/2:]
             ])
 
 
 for Mon in lMon:
-    U = load_var("ugrd", Year, Mon) - Uref
-    V = load_var("vgrd", Year, Mon) - Vref
+    U = load_var("ugrd", plev, Year, Mon) - Uref
+    V = load_var("vgrd", plev, Year, Mon) - Vref
     scale = 0.6
 
-    stitle = "d(wind) %04d %02d - DJF(JJA)"%(Year,Mon)
-    oPath  = os.path.join(figdir,"d.wind.%04d.%02d.png"%(Year,Mon))
+    stitle = "d(wind)@%04dhPa %04d %02d - DJF(JJA)"%(plev, Year,Mon)
+    oPath  = os.path.join(figdir,"d.wind.%04dhPa.%04d.%02d.png"%(plev,Year,Mon))
     f_draw( U, V, scale, stitle, oPath)
 
+#"""

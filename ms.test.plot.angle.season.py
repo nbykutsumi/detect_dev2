@@ -4,25 +4,25 @@ import util
 import os, sys
 import matplotlib.pyplot as plt
 
-Year = 2006
+Year = 2004
 iDTime  = datetime(Year,1,1,0)
 #eDTime  = datetime(Year,2,1,0)
 eDTime  = datetime(Year,12,31,0)
 dDTime  = timedelta(days=1)
 lDTime  = util.ret_lDTime(iDTime, eDTime, dDTime)
-
+plev    = 850
 baseDir = "/home/utsumi/mnt/well.share/temp"
 ny, nx  = 145, 288
 # Function --------------
-def load_var(var,DTime):
+def load_var(var,plev,DTime):
     srcDir = os.path.join(baseDir, var, "%d"%(DTime.year))
-    srcPath= os.path.join(srcDir, "%s.runmean.%04d%02d%02d.%dx%d"%(var, DTime.year, DTime.month, DTime.day, ny, nx))
+    srcPath= os.path.join(srcDir, "%s.runmean.%04dhPa.%04d%02d%02d.%dx%d"%(var, plev, DTime.year, DTime.month, DTime.day, ny, nx))
 
     return fromfile(srcPath, float32).reshape(ny,nx)
 
 
-def load_mon(var, Year, Mon):
-  sPath = os.path.join(baseDir,var,str(Year),"%s.mean.%04d%02d.145x288"%(var,Year,Mon))
+def load_mon(var, plev, Year, Mon):
+  sPath = os.path.join(baseDir,var,str(Year),"%s.mean.%04dhPa.%04d%02d.145x288"%(var,plev,Year,Mon))
 
   a2var = fromfile(sPath, float32).reshape(ny,nx)
   return a2var
@@ -45,17 +45,21 @@ def load_mon(var, Year, Mon):
 #            ])
 
 Uref = vstack([
-        array([load_mon("ugrd",Year,Mon)
-            for Mon in [6,7,8,9]]).mean(axis=0)[:ny/2]
-       ,array([load_mon("ugrd",Year,Mon)
-            for Mon in [1,2,3,12]]).mean(axis=0)[ny/2:]
+        array([load_mon("ugrd",plev,Year,Mon)
+            #for Mon in [6,7,8,9]]).mean(axis=0)[:ny/2]
+            for Mon in [7]]).mean(axis=0)[:ny/2]
+       ,array([load_mon("ugrd",plev,Year,Mon)
+            #for Mon in [1,2,3,12]]).mean(axis=0)[ny/2:]
+            for Mon in [1]]).mean(axis=0)[ny/2:]
             ])
 
 Vref = vstack([
-        array([load_mon("vgrd",Year,Mon)
-            for Mon in [6,7,8,9]]).mean(axis=0)[:ny/2]
-       ,array([load_mon("vgrd",Year,Mon)
-            for Mon in [1,2,3,12]]).mean(axis=0)[ny/2:]
+        array([load_mon("vgrd",plev,Year,Mon)
+            #for Mon in [6,7,8,9]]).mean(axis=0)[:ny/2]
+            for Mon in [7]]).mean(axis=0)[:ny/2]
+       ,array([load_mon("vgrd",plev,Year,Mon)
+            #for Mon in [1,2,3,12]]).mean(axis=0)[ny/2:]
+            for Mon in [1]]).mean(axis=0)[ny/2:]
             ])
 
 REFabs =  sqrt( Uref**2.0 + Vref**2.0)
@@ -65,19 +69,22 @@ a3var = empty([len(lDTime), ny, nx])
 
 for i, DTime in enumerate(lDTime):
     #q  = load_var("spfh", DTime)
-    U  = load_var("ugrd",DTime)
-    V  = load_var("vgrd",DTime)
+    U  = load_var("ugrd",plev,DTime)
+    V  = load_var("vgrd",plev,DTime)
     Wabs= sqrt(U**2.0 + V**2.0)
 
     a3var[i] = (U*Uref+V*Vref)/(Wabs*REFabs)
   
 
-lat = 35
+#lat = 35
+lat = 37
 lon = 140
 iy  = int(floor((lat+90)/1.25))
 ix  = int(floor(lon/1.25))
 
-ts = a3var[:, iy-1:iy+2,ix-1:ix+2].mean(axis=(1,2))
+#ts = a3var[:, iy-1:iy+2,ix-1:ix+2].mean(axis=(1,2))
+ts = a3var[:, iy-3:iy+5,ix-3:ix+5].mean(axis=(1,2))
+#ts = a3var[:, iy-1:iy+2,ix-1:ix+2].min(axis=(1,2))
 plt.plot(ts,"-")
 plt.show()
 

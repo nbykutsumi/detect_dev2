@@ -4,25 +4,25 @@ import util
 import os, sys
 import matplotlib.pyplot as plt
 
-Year = 2006
+Year = 2004
 iDTime  = datetime(Year,1,1,0)
 #eDTime  = datetime(Year,2,1,0)
 eDTime  = datetime(Year,12,31,0)
 dDTime  = timedelta(days=1)
 lDTime  = util.ret_lDTime(iDTime, eDTime, dDTime)
-
+plev    = 850
 baseDir = "/home/utsumi/mnt/well.share/temp"
 ny, nx  = 145, 288
 # Function --------------
-def load_var(var,DTime):
+def load_var(var,plev,DTime):
     srcDir = os.path.join(baseDir, var, "%d"%(DTime.year))
-    srcPath= os.path.join(srcDir, "%s.runmean.%04d%02d%02d.%dx%d"%(var, DTime.year, DTime.month, DTime.day, ny, nx))
+    srcPath= os.path.join(srcDir, "%s.runmean.%04dhPa.%04d%02d%02d.%dx%d"%(var, plev, DTime.year, DTime.month, DTime.day, ny, nx))
 
     return fromfile(srcPath, float32).reshape(ny,nx)
 
 
-def load_mon(var, Year, Mon):
-  sPath = os.path.join(baseDir,var,str(Year),"%s.mean.%04d%02d.145x288"%(var,Year,Mon))
+def load_mon(var, plev, Year, Mon):
+  sPath = os.path.join(baseDir,var,str(Year),"%s.mean.%04dhPa.%04d%02d.145x288"%(var,plev,Year,Mon))
 
   a2var = fromfile(sPath, float32).reshape(ny,nx)
   return a2var
@@ -31,23 +31,23 @@ def load_mon(var, Year, Mon):
 #------------------------
 
 Uref = vstack([
-        array([load_mon("spfh",Year,Mon)
+        array([load_mon("spfh",plev,Year,Mon)
             for Mon in [6,7,8,9]]).mean(axis=0)[:ny/2]
-       ,array([load_mon("spfh",Year,Mon)
+       ,array([load_mon("spfh",plev,Year,Mon)
             for Mon in [1,2,3,12]]).mean(axis=0)[ny/2:]
             ])
 
 Vref = vstack([
-        array([load_mon("spfh",Year,Mon)
+        array([load_mon("spfh",plev,Year,Mon)
             for Mon in [6,7,8,9]]).mean(axis=0)[:ny/2]
-       ,array([load_mon("spfh",Year,Mon)
+       ,array([load_mon("spfh",plev,Year,Mon)
             for Mon in [1,2,3,12]]).mean(axis=0)[ny/2:]
             ])
 
 a3var = empty([len(lDTime), ny, nx])
 
 for i, DTime in enumerate(lDTime):
-    q  = load_var("spfh", DTime)
+    q  = load_var("spfh", plev, DTime)
     a3var[i] = q
 
 lat = 35
