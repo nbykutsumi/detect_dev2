@@ -42,7 +42,7 @@ nx      = cy.nx
 
 
 thrvort   = cy.tcrvort
-thpgrad   = cy.thpgrad
+#thpgrad   = cy.thpgrad
 thwcore   = cy.thwcore
 thdura    = cy.thdura
 thinitsst = cy.thsst
@@ -67,7 +67,7 @@ def mk_dtcloc(year,mon):
   nlist    = len(da1["dura"])
   for i in range(nlist):
     dura        = da1["dura"    ][i]
-    pgrad       = da1["pgrad"   ][i]
+    #pgrad       = da1["pgrad"   ][i]
     nowpos      = da1["nowpos"  ][i]
     time        = da1["time"    ][i]
     iedist      = da1["iedist"  ][i]

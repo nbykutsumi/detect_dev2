@@ -8,19 +8,19 @@ import IO_Master
 import Cyclone
 #******************************************************
 #******************************************************
-prj     = "JRA55"
-model   = "__"
-run     = "__"
-res     = "145x288"
-tstp    = "6hr"
-noleap  = False
+#prj     = "JRA55"
+#model   = "__"
+#run     = "__"
+#res     = "145x288"
+#tstp    = "6hr"
+#noleap  = False
 
-#prj     = "HAPPI"
-#model   = "MIROC5"
-#run     = "C20-ALL-001"
-#res     = "128x256"
-#tstp    = "day"
-#noleap  = True
+prj     = "HAPPI"
+model   = "MIROC5"
+run     = "C20-ALL-001"
+res     = "128x256"
+tstp    = "day"
+noleap  = True
 
 lvar   = ["ua","va"]
 plev   = 500
@@ -29,12 +29,12 @@ lhour  = {"6hr": [0,6,12,18]
          ,"day": [0]
          }[tstp]
 
-#iDTime = datetime(2006,1,1,6)
-#eDTime = datetime(2006,12,31,18)
+iDTime = datetime(2006,1,1,6)  # HAPPI
+eDTime = datetime(2016,1,1,0)  # HAPPI
 #iDTime = datetime(2009,1,1,0)
 #eDTime = datetime(2009,1,31,18)
-iDTime = datetime(2001,1,1,0)
-eDTime = datetime(2015,8,31,18)
+#iDTime = datetime(2001,1,1,0)
+#eDTime = datetime(2015,8,31,18)
 
 dDTime = timedelta(days=1)
 

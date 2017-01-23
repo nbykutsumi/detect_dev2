@@ -5,33 +5,34 @@ import util
 import config_func
 import IO_Master
 import Cyclone
-import ConstCyclone
 import calendar
 import os, sys
 ##***************************
-#--------------------------------------------------
-prj     = "JRA55"
-model   = "__"
-run     = "__"
-res     = "145x288"
-noleap  = False
+##--------------------------------------------------
+#prj     = "JRA55"
+#model   = "__"
+#run     = "__"
+#res     = "145x288"
+#noleap  = False
 
-#prj     = "HAPPI"
-#model   = "MIROC5"
-#run     = "C20-ALL-001"
-#res     = "128x256"
-#noleap  = True
+prj     = "HAPPI"
+model   = "MIROC5"
+#run     = "C20-ALL-001-100"
+#run     = "C20-ALL-001-070"
+run     = "C20-ALL-001-130"
+res     = "128x256"
+noleap  = True
 
-#iDTime = datetime(2006,1,1,6)
-#eDTime = datetime(2006,1,31,18)
+iDTime = datetime(2006,1,1,6)  # HAPPI
+eDTime = datetime(2015,9,1,0)  # HAPPI
 #iDTime = datetime(2004,1,4,0)
 #eDTime = datetime(2004,8,31,18)
 
 #iDTime = datetime(2001,1,1,0)
 #eDTime = datetime(2004,8,31,18)
 
-iDTime = datetime(2004,8,1,0)
-eDTime = datetime(2015,8,31,18)
+#iDTime = datetime(2004,8,1,0)
+#eDTime = datetime(2015,8,31,18)
 
 
 
@@ -54,6 +55,8 @@ endh         = 18
 thpgrad      = cy.thpgrad #[Pa]
 exrvort      = cy.exrvort
 thdist_search = 500.0*1000.0   #[m]
+thtopo       = cy.thtopo
+
 #####################################################
 # functions
 #####################################################
@@ -113,10 +116,6 @@ def read_txtlist(iname):
   aout  = array(lines, float32)
   return aout
 #******************************************************
-#-- const --- 
-const    = ConstCyclone.Const()
-thtopo   = const.thtopo
-
 #****************************************************
 # read lat, lon data
 #----------------------
@@ -195,6 +194,8 @@ for idt, DTime in enumerate(lDTime):
   #---------------------------------------
   #   for 0
   #************
+  print "iposname0"
+  print iposname0
   if ( os.access(iposname0, os.F_OK) ):
     a2pgrad0   = fromfile(pgradname0,   float32).reshape(ny, nx)
     a2loc0     = fromfile(locname0,     float32).reshape(ny, nx)

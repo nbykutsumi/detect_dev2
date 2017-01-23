@@ -9,24 +9,26 @@ import ConstCyclone
 import calendar
 import os, sys
 ##***************************
-prj     = "JRA55"
-model   = "__"
-run     = "__"
-res     = "145x288"
-noleap  = False
+#prj     = "JRA55"
+#model   = "__"
+#run     = "__"
+#res     = "145x288"
+#noleap  = False
 
-#prj     = "HAPPI"
-#model   = "MIROC5"
-#run     = "C20-ALL-001"
-#res     = "128x256"
-#noleap  = True
+prj     = "HAPPI"
+model   = "MIROC5"
+#run     = "C20-ALL-001-100"
+#run     = "C20-ALL-001-070"
+run     = "C20-ALL-001-130"
+res     = "128x256"
+noleap  = True
 
-#iDTime = datetime(2009,1,1,0)
-#eDTime = datetime(2009,1,31,18)
-#iDTime = datetime(2004,1,4,0)
-#eDTime = datetime(2004,1,18,18)
-iDTime = datetime(2001,1,1,0)
-eDTime = datetime(2015,8,31,18)
+iDTime = datetime(2006,1,1,6)   # HAPPI
+eDTime = datetime(2015,9,1,0)   # HAPPI
+#iDTime = datetime(2006,1,1,6)
+#eDTime = datetime(2014,11,10,18)
+#iDTime = datetime(2001,1,1,0)
+#eDTime = datetime(2015,8,31,18)
 
 
 
@@ -156,7 +158,7 @@ for idt, DTime1 in enumerate(lDTimeRev):
   if counter == 1:
     #------
     if flgresume == True:
-      preposnextname1 = cy.path_a2dat("prepos",DTime1+timedelta(hours=hinc)).srcPath
+      preposnextname1 = cy.path_a2dat("prepos",DTime1+dDTime).srcPath
       a2preposnext1   = fromfile(preposnextname1, int32).reshape(ny,nx)
       a2nextpos1      = ones([ny,nx],int32)*miss_int
       for iynext in range(0, ny):
@@ -201,10 +203,10 @@ for idt, DTime1 in enumerate(lDTimeRev):
   #--------------------------------------
   if (counter == 1):
     if flgresume == True:
-      duraname2 = cy.path_a2dat("dura",DTime1+timedelta(hours=hinc)).srcPath
+      duraname2 = cy.path_a2dat("dura",DTime1+dDTime).srcPath
       a2dura2   = fromfile(duraname2, int32).reshape(ny,nx)
 
-      eposname2 = cy.path_a2dat("epos",DTime1+timedelta(hours=hinc)).srcPath
+      eposname2 = cy.path_a2dat("epos",DTime1+dDTime).srcPath
       a2epos2   = fromfile(eposname2, int32).reshape(ny,nx)
 
 

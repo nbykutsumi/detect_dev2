@@ -3,7 +3,8 @@ import os
 def config_func(prj, model, run):
     cfg = {}
     #rootDir = "/home/utsumi/mnt/well.share/WS"
-    rootDir = "/home/utsumi/mnt/temp/WS"
+    rootDir = "/home/utsumi/mnt/wellshare/WS"
+    #rootDir = "/home/utsumi/mnt/temp/WS"
     baseDir = os.path.join(rootDir, prj, model, run)
 
     cfg["rootDir"] = rootDir

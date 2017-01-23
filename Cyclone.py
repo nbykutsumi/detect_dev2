@@ -74,7 +74,7 @@ class Cyclone(Const):
     self.baseDir = cfg["baseDir"]
     basebaseDir  = "/".join(self.baseDir.split("/")[:-1])
 
-    Const.__init__(self)
+    Const.__init__(self, cfg=cfg)
     #------------
     try:
       self.Lat     = read_txtlist( os.path.join(basebaseDir, "lat.txt"))
@@ -145,11 +145,15 @@ class Cyclone(Const):
   # if tctype == "bst":
   #   return self.dictC_bstTC(Year, Mon, varname=varname)
 
-  def mkInstDictC(self, iYM, eYM, varname="pgrad", tctype="bst"):
+  def mkInstDictC(self, iYM, eYM, varname="vortlw", tctype="bst"):
    if tctype == "obj":
      return self.mkInstDictC_objTC(iYM, eYM, varname=varname)
    if tctype == "bst":
      return self.mkInstDictC_bstTC(iYM, eYM, varname=varname)
+   if tctype == "notc":
+     return self.mkInstDictC_noTC(iYM, eYM, varname=varname)
+
+
 
   #def dictC_bstTC(self, Year, Mon, varname="pgrad"):
   #  thpgrad   = self.thpgrad
@@ -214,8 +218,57 @@ class Cyclone(Const):
   #  return self
 
 
-  def mkInstDictC_bstTC(self, iYM, eYM, varname="pgrad"):
-    thpgrad   = self.thpgrad
+  def mkInstDictC_noTC(self, iYM, eYM, varname="vortlw"):
+    thdura    = self.thdura
+
+    dictExC   = {}
+    dictTC    = {}
+    da1       = {}
+
+    iYear,iMon= iYM
+    eYear,eMon= eYM
+    lYM       = ret_lYM(iYM, eYM)
+
+    #---- make ExC dictionary -----
+    lvar      = ["dura","nowpos","time","vortlw"]
+    for Year,Mon in lYM:
+      for var in lvar:
+         da1[var]  = self.load_clist(var, Year, Mon)
+  
+      nlist    = len(da1["dura"])
+  
+      for i in range(nlist):
+        dura        = da1["dura"    ][i]
+        nowpos      = da1["nowpos"  ][i]
+        time        = da1["time"    ][i]
+        oVar        = da1[varname][i]
+        #---- dura -------
+        if dura < thdura:
+          #print "dura",dura,"<",thdura
+          continue
+   
+        #---- time -------
+        Year,Mon,Day,Hour = solve_time(time)
+        DTime             = datetime(Year,Mon,Day,Hour)
+    
+        #---- nowpos  ----
+        x,y               = fortpos2pyxy(nowpos, self.nx, -9999)
+  
+        #-- List  -------
+        oList  = [x,y,oVar] 
+  
+        try:
+          dictExC[DTime].append(oList)
+        except KeyError:
+          dictExC[DTime] = [oList]
+    #--------------------------------------------
+    self.dictTC  = {}
+    self.dictExC = dictExC
+    return self
+
+
+
+  def mkInstDictC_bstTC(self, iYM, eYM, varname="vortlw"):
     thdura    = self.thdura
 
     dictExC   = {}
@@ -232,7 +285,7 @@ class Cyclone(Const):
       dictTC.update(bst.ret_dpyxy(Year, self.Lon, self.Lat))
 
     #---- make ExC dictionary -----
-    lvar      = ["dura","pgrad","nowpos","time"]
+    lvar      = ["dura","nowpos","time","vortlw"]
     for Year,Mon in lYM:
       for var in lvar:
          da1[var]  = self.load_clist(var, Year, Mon)
@@ -242,7 +295,6 @@ class Cyclone(Const):
   
       for i in range(nlist):
         dura        = da1["dura"    ][i]
-        pgrad       = da1["pgrad"   ][i]
         nowpos      = da1["nowpos"  ][i]
         time        = da1["time"    ][i]
         oVar        = da1[varname][i]
@@ -250,18 +302,13 @@ class Cyclone(Const):
         if dura < thdura:
           #print "dura",dura,"<",thdura
           continue
-        #---- thpgrad ----
-        if pgrad < thpgrad:
-          #print "pgrad",pgrad,"<",thpgrad
-          continue
-    
+   
         #---- time -------
         Year,Mon,Day,Hour = solve_time(time)
         DTime             = datetime(Year,Mon,Day,Hour)
     
         #---- nowpos  ----
         x,y               = fortpos2pyxy(nowpos, self.nx, -9999)
-  
   
         #-- check TC ----
         lxyTC  = expand8grids(dictTC[DTime], self.ny, self.nx)
@@ -270,7 +317,6 @@ class Cyclone(Const):
    
         #-- List  -------
         oList  = [x,y,oVar] 
-  
   
         try:
           dictExC[DTime].append(oList)
@@ -282,8 +328,8 @@ class Cyclone(Const):
     return self
 
 
-  def mkInstDictC_objTC(self, iYM, eYM, varname="pgrad"):
-    thrvort   = self.thrvort
+  def mkInstDictC_objTC(self, iYM, eYM, varname="vortlw"):
+    thrvort   = self.tcrvort
     thpgrad   = self.thpgrad
     thwcore   = self.thwcore
     thdura    = self.thdura
@@ -294,8 +340,7 @@ class Cyclone(Const):
     da1       = {}
 
     #lvar      = ["dura","pgrad","nowpos","nextpos","time","iedist","rvort","dtlow","dtmid","dtup","initsst","initland"]
-    lvar      = ["dura","pgrad","nowpos","time","rvort","dtlow","dtmid","dtup","initsst","initland"]
-
+    lvar      = ["dura","nowpos","time","vortlw","dtlow","dtmid","dtup","initsst","initland"]
 
     lYM       = ret_lYM(iYM, eYM)
     for Year,Mon in lYM:
@@ -307,11 +352,11 @@ class Cyclone(Const):
       nlist    = len(da1["dura"])
       for i in range(nlist):
         dura        = da1["dura"    ][i]
-        pgrad       = da1["pgrad"   ][i]
         nowpos      = da1["nowpos"  ][i]
         time        = da1["time"    ][i]
         #iedist      = da1["iedist"  ][i]
-        rvort       = abs(da1["rvort"   ][i])
+        #rvort       = abs(da1["vortlw"   ][i])
+        rvort       = da1["vortlw"   ][i]
         dtlow       = da1["dtlow"   ][i]
         dtmid       = da1["dtmid"   ][i]
         dtup        = da1["dtup"    ][i]
@@ -323,10 +368,6 @@ class Cyclone(Const):
         #---- dura -------
         if dura < thdura:
           #print "dura",dura,"<",thdura
-          continue
-        #---- thpgrad ----
-        if pgrad < thpgrad:
-          #print "pgrad",pgrad,"<",thpgrad
           continue
     
         #---- time -------
@@ -404,140 +445,14 @@ class Cyclone(Const):
 
 
 
-  #def dictC_objTC(self, Year, Mon, varname="pgrad"):
-  #  thrvort   = self.thrvort
-  #  thpgrad   = self.thpgrad
-  #  thwcore   = self.thwcore
-  #  thdura    = self.thdura
-  #  thinitsst = self.thsst 
-
-  #  dictExC   = {}
-  #  dictTC    = {}
-  #  da1       = {}
-
-  #  #lvar      = ["dura","pgrad","nowpos","nextpos","time","iedist","rvort","dtlow","dtmid","dtup","initsst","initland"]
-  #  lvar      = ["dura","pgrad","nowpos","time","rvort","dtlow","dtmid","dtup","initsst","initland"]
-  #  for var in lvar:
-  #     da1[var]  = self.load_clist(var, Year, Mon)
-  #
-  #  #---- make dictionary -----
-  #  dtcloc   = {}
-  #  nlist    = len(da1["dura"])
-  #  for i in range(nlist):
-  #    dura        = da1["dura"    ][i]
-  #    pgrad       = da1["pgrad"   ][i]
-  #    nowpos      = da1["nowpos"  ][i]
-  #    time        = da1["time"    ][i]
-  #    #iedist      = da1["iedist"  ][i]
-  #    rvort       = abs(da1["rvort"   ][i])
-  #    dtlow       = da1["dtlow"   ][i]
-  #    dtmid       = da1["dtmid"   ][i]
-  #    dtup        = da1["dtup"    ][i]
-  #    initsst     = da1["initsst" ][i]
-  #    initland    = da1["initland"][i]
-  #    #nextpos     = da1["nextpos" ][i]
-
-  #    oVar        = da1[varname][i]
-  #    #---- dura -------
-  #    if dura < thdura:
-  #      #print "dura",dura,"<",thdura
-  #      continue
-  #    #---- thpgrad ----
-  #    if pgrad < thpgrad:
-  #      #print "pgrad",pgrad,"<",thpgrad
-  #      continue
-  #
-  #    #---- time -------
-  #    Year,Mon,Day,Hour = solve_time(time)
-  #    DTime             = datetime(Year,Mon,Day,Hour)
-  #
-  #    #---- nowpos  ----
-  #    x,y               = fortpos2pyxy(nowpos, self.nx, -9999)
-  #
-  #    #-- List  -------
-  #    oList  = [x,y,oVar] 
-
-  #    #---- thrvort ----
-  #    if rvort < thrvort:
-  #      #print "rvort",rvort,"<",thrvort
-  #      try:
-  #        dictExC[DTime].append(oList)
-  #      except KeyError:
-  #        dictExC[DTime] = [oList]
-  #
-  #      continue
-  #
-  #    #---- thwcore ----
-  #    if dtup + dtmid + dtlow < thwcore:
-  #      #print "thwcore",dtup+dtmid+dtlow,"<",thwcore
-  #      try:
-  #        dictExC[DTime].append(oList)
-  #      except KeyError:
-  #        dictExC[DTime] = [oList]
-  #
-  #      continue
-  #
-  #    #---- initsst ----
-  #    if initsst < thinitsst:
-  #      #print "initsst",initsst,"<",thinitsst
-  #      try:
-  #        dictExC[DTime].append(oList)
-  #      except KeyError:
-  #        dictExC[DTime] = [oList]
-  #
-  #      continue
-  #
-  #    #---- initland ----
-  #    if initland > 0.0:
-  #      #print "initland",initland,">",0.0
-  #      try:
-  #        dictExC[DTime].append(oList)
-  #      except KeyError:
-  #        dictExC[DTime] = [oList]
-  #
-  #      continue
-  #
-  #    #---- TC ----
-  #    try:
-  #      dictTC[DTime].append(oList)
-  #    except KeyError:
-  #      dictTC[DTime] = [oList]
-
-  #  #---- fill blank dates ----
-  #  iDay = 1
-  #  eDay = calendar.monthrange(Year,Mon)[1]
-  #  lDay = range(iDay,eDay+1)
-  #  lHour= [0,6,12,18]
-  #  for Day, Hour in [[Day,Hour] for Day in lDay for Hour in lHour]:
-  #    DTime = datetime(Year,Mon,Day,Hour)
-  #    if not dictExC.has_key(DTime):
-  #      dictExC[DTime] = []
-  #    if not dictTC.has_key(DTime):
-  #      dictTC[DTime]  = []
-
-  #  #--------------------------------------------
-  #  self.dictTC  = dictTC
-  #  self.dictExC = dictExC
-  #  return self
-
-
 class Cyclone_2D(Cyclone):
-  #def __init__(self, Year, Mon, model="JRA55", res="bn", tctype="bst",miss=-9999.):
-  #  Cyclone.__init__(self, model=model, res=res)
-  #  self.instDict  = self.dictC(Year, Mon, varname="pgrad",tctype=tctype)
-  #  self.a2miss    = ones([self.ny, self.nx], float32)*miss
-  #  self.miss      = miss
-  #  self.tctype    = tctype
-  #  self.res       = res
-
-  #def __init__(self, iYM, eYM, model="JRA55", res="bn", tctype="bst",miss=-9999.):
   def __init__(self, iYM, eYM, cfg, tctype, miss=-9999.):
     """
     cfg : Dictionary with "prj", "model", "run", "res"
     tctype = "bst" or "obj"
     """
     Cyclone.__init__(self, cfg)
-    self.instDict  = self.mkInstDictC(iYM, eYM, varname="pgrad",tctype=tctype)
+    self.instDict  = self.mkInstDictC(iYM, eYM, varname="vortlw",tctype=tctype)
     self.a2miss    = ones([self.ny, self.nx], float32)*miss
     self.miss      = miss
     self.tctype    = tctype
@@ -552,11 +467,16 @@ class Cyclone_2D(Cyclone):
       a2dat     = self.a2miss.copy()
     return a2dat
 
-  def mk_a2exc(self, DTime):
+  def mk_a2exc(self, DTime, locfill=False):
     if len(self.instDict.dictExC[DTime]) >0:
-      aList     = zip(*array(self.instDict.dictExC[DTime]))
+      aList     = zip(*array(self.instDict.dictExC[DTime], int))
       a2dat     = self.a2miss.copy()
-      a2dat[ aList[1], aList[0]] = aList[-1]
+
+      if locfill==False:
+        a2dat[ aList[1], aList[0]] = aList[-1]
+      else:
+        a2dat[ aList[1], aList[0]] = locfill
+
     else:
       a2dat     = a2miss.copy()
     return a2dat

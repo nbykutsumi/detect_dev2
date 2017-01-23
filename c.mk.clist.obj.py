@@ -9,24 +9,27 @@ import calendar
 import detect_func
 import collections
 #-----------------------------------------
-prj     = "JRA55"
-model   = "__"
-run     = "__"
-res     = "145x288"
-noleap  = False
+#prj     = "JRA55"
+#model   = "__"
+#run     = "__"
+#res     = "145x288"
+#noleap  = False
 
-#prj     = "HAPPI"
-#model   = "MIROC5"
+prj     = "HAPPI"
+model   = "MIROC5"
 #run     = "C20-ALL-001"
-#res     = "128x256"
-#noleap  = True
+#run     = "C20-ALL-001-100"
+#run     = "C20-ALL-001-070"
+run     = "C20-ALL-001-130"
+res     = "128x256"
+noleap  = True
 
-#iDTime = datetime(2006,1,1,6)
-#eDTime = datetime(2006,1,31,18)
+iDTime = datetime(2006,1,1,6)   # HAPPI
+eDTime = datetime(2015,9,1,0)   # HAPPI
 #iDTime = datetime(2004,1,4,0)
 #eDTime = datetime(2004,1,18,18)
-iDTime = datetime(2001,1,1,0)
-eDTime = datetime(2015,8,31,18)
+#iDTime = datetime(2001,1,1,0)
+#eDTime = datetime(2015,8,31,18)
 
 dDTime = timedelta(hours=6)
 

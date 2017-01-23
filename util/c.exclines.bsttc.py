@@ -17,29 +17,36 @@ import BestTrackTC
 import util
 import Cyclone
 #--------------------------------------
-prj     = "JRA55"
-model   = "__"
-run     = "__"
-res     = "145x288"
+#prj     = "JRA55"
+#model   = "__"
+#run     = "__"
+#res     = "145x288"
 
-#Prj     = "HAPPI"
-#Model   = "MIROC5"
-#Run     = "C20-ALL-001"
-#Res     = "128x256"
+prj     = "HAPPI"
+model   = "MIROC5"
+#run     = "C20-ALL-001"
+#run     = "C20-ALL-001-100"
+#run     = "C20-ALL-001-070"
+run     = "C20-ALL-001-130"
+res     = "128x256"
+
+season = "DJF"
 
 #singleday = True
 singleday = False
 unitdist  = 10.0 # km / hour
 #unitdist  = 150.0 # km / hour  # test
 #----------------
-#iDTime = datetime(2004,1,8,0)
-#eDTime = datetime(2004,1,14,18)
-iDTime = datetime(2004,1,1,0)
-eDTime = datetime(2004,12,31,18)
+#iDTime = datetime(2006,1,1,6)  # HAPPI
+#eDTime = datetime(2015,9,1,0)  # HAPPI
+iDTime = datetime(2006,1,1,0)
+eDTime = datetime(2006,12,31,18)
+
+lMon   = util.ret_lmon(season)
 
 dDTime = timedelta(hours=6)
 lDTime = util.ret_lDTime(iDTime, eDTime, dDTime)
-
+lDTime = [DTime for DTime in lDTime if DTime.month in lMon]
 
 ## test
 #iDTime = datetime(2004,12,1,0)
@@ -364,14 +371,15 @@ print "coastlines"
 M.drawcoastlines(color="k")
 
 #-- meridians and parallels
-parallels = arange(-90.,90,10.)
+parallels = arange(-90.,90,30)
 M.drawparallels(parallels,labels=[1,0,0,0],fontsize=lonlatfontsize)
 
-meridians = arange(0.,360.,10.)
+meridians = arange(0.,360.,30)
 M.drawmeridians(meridians,labels=[0,0,0,1],fontsize=lonlatfontsize,rotation=lonrotation)
 
 #-- title --------------------
-stitle  = "%04d/%02d/%02d-%04d/%02d/%02d"\
+stitle  = "%s %s \n"%(run, season)
+stitle  = stitle + "%04d/%02d/%02d-%04d/%02d/%02d"\
           %(iDTime.year, iDTime.month, iDTime.day, eDTime.year, eDTime.month, eDTime.day)
 axmap.set_title(stitle, fontsize=10.0)
 
@@ -381,7 +389,7 @@ print "save"
 sodir   = "/home/utsumi/temp"
 util.mk_dir(sodir)
 #soname  = sodir + "/exc.track.w.bsttc.%s.%04d.%02d.%02d-%02d.%02dh.png"%(model, year,mon, iday, eday, thdura)
-soname  = sodir + "/exc.track.png"
+soname  = sodir + "/exc.%s.%s.track.png"%(season,run)
 plt.savefig(soname)
 plt.clf()
 print soname

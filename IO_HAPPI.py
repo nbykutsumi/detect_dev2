@@ -3,7 +3,7 @@ from HAPPI import Happi
 
 class IO_Happi(Happi):
     def __init__(self, model, run, res):
-        prj, expr, ens = run.split("-")
+        prj, expr, ens = run.split("-")[:3]
         ens  = int(ens)
         Happi.__init__(self)
         Happi.__call__(self, model, prj, expr, ens)
