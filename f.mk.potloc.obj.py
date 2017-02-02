@@ -7,21 +7,22 @@ import Front
 import calendar
 import detect_func
 import sys, os
-import ConstFront
 #from dtanl_fsub import *
 from front_fsub import *
 #-----------------------
-prj     = "JRA55"
-model   = "__"
-run     = "__"
-res     = "145x288"
-noleap  = False
+#prj     = "JRA55"
+#model   = "__"
+#run     = "__"
+#res     = "145x288"
+#noleap  = False
 
-#prj     = "HAPPI"
-#model   = "MIROC5"
+prj     = "HAPPI"
+model   = "MIROC5"
 #run     = "C20-ALL-001"
-#res     = "128x256"
-#noleap  = True
+#run     = "C20-ALL-001-070-100"
+run     = "C20-ALL-001-100-070"
+res     = "128x256"
+noleap  = True
 
 #ltq    = ["t","q"]
 ltq    = ["t"]
@@ -29,8 +30,12 @@ miss  = -9999.0
 
 dvar  = {"t":"ta", "q":"q"}
 
-iDTime = datetime(2001,1,1,0)
-eDTime = datetime(2015,8,31,18)
+iDTime = datetime(2006,1,1,6)  # HAPPI
+eDTime = datetime(2015,1,1,0)  # HAPPI
+
+#iDTime = datetime(2006,1,1,0)  
+#eDTime = datetime(2014,12,31,18)  
+
 dDTime = timedelta(hours=6)
 
 ret_lDTime = {False: util.ret_lDTime
@@ -48,7 +53,6 @@ cfg["run"]   = run
 cfg["res"]   = res
 
 front  = Front.Front(cfg, miss=miss)
-ConstF = ConstFront.Const(model=model, res=res)
 #------------------------
 #local region ------
 plev     = 850   #(hPa)
@@ -58,8 +62,8 @@ cbarflag = "True"
 
 #thorog  = ctrack_para.ret_thorog()
 #thgradorog=ctrack_para.ret_thgradorog()
-thorog     = ConstF.thorog
-thgradorog = ConstF.thgradorog
+thorog     = front.thorog
+thgradorog = front.thgradorog
 
 #************************
 # FUNCTIONS

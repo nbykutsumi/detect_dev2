@@ -6,27 +6,33 @@ from datetime import datetime
 import socket
 import calendar
 import sys, os
-import util
+import myfunc.util as util
 import config_func
-import Cyclone
+import Cyclone 
 import util_para
 import detect_func
 #--------------------------------------
-iyear = 2004
-eyear = 2004
+iyear = 2006
+eyear = 2014
 lyear = range(iyear,eyear+1)
 lseason = ["ALL"]
 #lseason = [2]
 
-prj     = "JRA55"
-model   = "__"
-run     = "__"
-res     = "145x288"
+#prj     = "JRA55"
+#model   = "__"
+#run     = "__"
+#res     = "145x288"
 
-#prj     = "HAPPI"
-#model   = "MIROC5"
-#run     = "C20-ALL-001"
-#res     = "128x256"
+prj     = "HAPPI"
+model   = "MIROC5"
+run     = "C20-ALL-001"
+#run     = "C20-ALL-001-150-t10"
+#run     = "C20-ALL-001-150-t20"
+#run     = "C20-ALL-001-100-t02"
+#run     = "C20-ALL-001-100-t10"
+#run     = "C20-ALL-001-130-t02"
+#run     = "C20-ALL-001-160-t02"
+res     = "128x256"
 
 region= "GLOB"
 #singleday = True
@@ -57,7 +63,8 @@ miss_int= -9999
 #*************************************
 def mk_dtcloc(year,mon):
   da1       = {}
-  lstype  = ["dura","pgrad","nowpos","nextpos","time","iedist","vortlw","dtlow","dtmid","dtup","initsst","initland"]
+  #lstype  = ["dura","pgrad","nowpos","nextpos","time","iedist","vortlw","dtlow","dtmid","dtup","initsst","initland"]
+  lstype  = ["dura","pgrad","nowpos","nextpos","time","iedist","vortlw","dtlow","dtmid","dtup","initsst","initland", "wmeanlow","wmeanup"]
   for stype in lstype:
      da1[stype]  = cy.load_clist(stype, year, mon)
 
@@ -79,6 +86,9 @@ def mk_dtcloc(year,mon):
     initsst     = da1["initsst" ][i]
     initland    = da1["initland"][i]
     nextpos     = da1["nextpos" ][i]
+    # Test
+    wup         = da1["wmeanup" ][i]
+    wlow        = da1["wmeanlow"][i]
     #---- check time ----
     ### This section should be prior to the condition filtering
 
@@ -118,6 +128,10 @@ def mk_dtcloc(year,mon):
       #print "initland",initland,">",0.0
       continue 
 
+    #---- wmean (test) ---
+    if wup > wlow:
+      #print "wup > wlow !!"
+      continue
 
 #    #---- iedist -----
 #    if iedist < dura*unitdist:
@@ -253,7 +267,7 @@ for season in lseason:
   M.drawmeridians(meridians,labels=[0,0,0,1],fontsize=lonlatfontsize,rotation=lonrotation)
   
   #-- title --------------------
-  stitle  = "%04d %02d %02d-%02d"%(year,mon,iday, eday)
+  stitle  = "%s %04d %02d %02d-%02d"%(run, year,mon,iday, eday)
   axmap.set_title(stitle, fontsize=10.0)
   
   #-- save --------------------
@@ -263,10 +277,12 @@ for season in lseason:
   #  sodir   = "/media/disk2/out/cyclone/tc.obj"
   #elif hostname in ["mizu","naam"]:
   #  sodir   = "/tank/utsumi/out/cyclone/tc.obj"
-  sodir  = "/home/utsumi/temp"
+  #sodir  = "/home/utsumi/temp"
+  sodir  = "/home/utsumi/mnt/wellshare/HAPPI/anlWS/tune"
   #----
   detect_func.mk_dir(sodir)
-  soname  = sodir + "/tclines.%s.%s.%04d.%s.%02dh.wc%3.2f.sst%d.vor%.1e.png"%(model, region, year, season, thdura, thwcore, thinitsst -273.15, thrvort)
+  #soname  = sodir + "/tclines.%s.%s.%04d.%s.%02dh.wc%3.2f.sst%d.vor%.1e.png"%(model, region, year, season, thdura, thwcore, thinitsst -273.15, thrvort)
+  soname  = sodir + "/test.tclines.%s.%s.%04d.%s.%02dh.wc%3.2f.sst%d.vor%.1e.png"%(model, region, year, season, thdura, thwcore, thinitsst -273.15, thrvort)
   
   plt.savefig(soname)
   plt.clf()

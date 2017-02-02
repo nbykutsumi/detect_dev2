@@ -6,30 +6,32 @@ import util
 import config_func
 import Cyclone
 
-prj   = "JRA55"
-model = "__"
-run   = "__"
-res   = "125x288"
-noleap= False
-#iyear_data = 1958
+#prj   = "JRA55"
+#model = "__"
+#run   = "__"
+#res   = "125x288"
+#noleap= False
+##iyear_data = 1958
+##imon_data  = 1
+#iyear_data = 2004
 #imon_data  = 1
-iyear_data = 2004
+
+prj     = "HAPPI"
+model   = "MIROC5"
+run     = "C20-ALL-001"
+#run     = "C20-ALL-001-100-t02"
+#run     = "C20-ALL-001-130-t02"
+#run     = "C20-ALL-001-100-t20"
+#run     = "C20-ALL-001-160-t02"
+res     = "128x256"
+noleap  = True
+iyear_data = 2006
 imon_data  = 1
-
-
-
-#prj     = "HAPPI"
-#model   = "MIROC5"
-#run     = "C20-ALL-001"
-#res     = "128x256"
-#noleap  = True
-#iyear_data = 2006
-#imon_data  = 1
 
 #iYM    = [2006,1]
 #eYM    = [2006,1]
-iYM    = [2004,1]
-eYM    = [2004,12]
+iYM    = [2006,1]
+eYM    = [2015,1]
 lYM    = util.ret_lYM(iYM, eYM)
 
 cfg    = config_func.config_func(prj, model, run)

@@ -340,7 +340,8 @@ class Cyclone(Const):
     da1       = {}
 
     #lvar      = ["dura","pgrad","nowpos","nextpos","time","iedist","rvort","dtlow","dtmid","dtup","initsst","initland"]
-    lvar      = ["dura","nowpos","time","vortlw","dtlow","dtmid","dtup","initsst","initland"]
+    #lvar      = ["dura","nowpos","time","vortlw","dtlow","dtmid","dtup","initsst","initland"]
+    lvar      = ["dura","nowpos","time","vortlw","dtlow","dtmid","dtup","initsst","initland","wmeanup","wmeanlow"]  # wmean added.
 
     lYM       = ret_lYM(iYM, eYM)
     for Year,Mon in lYM:
@@ -363,7 +364,8 @@ class Cyclone(Const):
         initsst     = da1["initsst" ][i]
         initland    = da1["initland"][i]
         #nextpos     = da1["nextpos" ][i]
-  
+        wup         = da1["wmeanup" ][i]
+        wlow        = da1["wmeanlow"][i] 
         oVar        = da1[varname][i]
         #---- dura -------
         if dura < thdura:
@@ -399,7 +401,17 @@ class Cyclone(Const):
             dictExC[DTime] = [oList]
     
           continue
-    
+
+        #---- wup & wlow --
+        if wup > wlow:
+          try:
+            dictExC[DTime].append(oList)
+          except KeyError:
+            dictExC[DTime] = [oList]
+
+          #print "wup > wlow !!"
+          continue 
+ 
         #---- initsst ----
         if initsst < thinitsst:
           #print "initsst",initsst,"<",thinitsst
@@ -458,11 +470,15 @@ class Cyclone_2D(Cyclone):
     self.tctype    = tctype
     self.res       = cfg["res"]
 
-  def mk_a2tc(self, DTime):
+  def mk_a2tc(self, DTime, locfill=False):
     if len(self.instDict.dictTC[DTime]) >0:
       aList     = zip(*array(self.instDict.dictTC[DTime]))
       a2dat     = self.a2miss.copy()
-      a2dat[ aList[1], aList[0]] = aList[-1]
+      if locfill==False:
+        a2dat[ aList[1], aList[0]] = aList[-1]
+      else:
+        a2dat[ aList[1], aList[0]] = locfill
+
     else:
       a2dat     = self.a2miss.copy()
     return a2dat

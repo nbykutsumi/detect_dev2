@@ -17,9 +17,14 @@ import os, sys
 
 prj     = "HAPPI"
 model   = "MIROC5"
-#run     = "C20-ALL-001-100"
+run     = "C20-ALL-001"
 #run     = "C20-ALL-001-070"
-run     = "C20-ALL-001-130"
+#run     = "C20-ALL-001-130"
+#run     = "C20-ALL-001-160"
+#run     = "C20-ALL-001-190"
+#run     = "C20-ALL-001-210"
+#run     = "C20-ALL-001-220"
+#run     = "C20-ALL-001-250"
 res     = "128x256"
 noleap  = True
 

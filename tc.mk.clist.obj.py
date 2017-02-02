@@ -8,24 +8,29 @@ import util
 import config_func
 import IO_Master
 import Cyclone
-#--------------------------------------
-prj   = "JRA55"
-model = "__"
-run   = "__"
-res   = "145x288"
-noleap= False
+##--------------------------------------
+#prj   = "JRA55"
+#model = "__"
+#run   = "__"
+#res   = "145x288"
+#noleap= False
 
-#prj     = "HAPPI"
-#model   = "MIROC5"
-#run     = "C20-ALL-001"
-#res     = "128x256"
-#noleap  = True
+prj     = "HAPPI"
+model   = "MIROC5"
+run     = "C20-ALL-001"
+#run     = "C20-ALL-001-100-t02"
+#run     = "C20-ALL-001-100-t10"
+#run     = "C20-ALL-001-130-t02"
+#run     = "C20-ALL-001-160-t02"
+#run     = "C20-ALL-001-190-t02"
+res     = "128x256"
+noleap  = True
 
 #iDTime = datetime(2006,1,1,6)
 #eDTime = datetime(2006,1,31,18)
 
-iDTime = datetime(2004,1,1,0)
-eDTime = datetime(2004,12,31,18)
+iDTime = datetime(2006,1,1,6)
+eDTime = datetime(2015,1,1,0)
 
 dDTime = timedelta(hours=6)
 

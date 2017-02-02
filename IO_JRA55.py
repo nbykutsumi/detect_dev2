@@ -14,6 +14,7 @@ class IO_Jra55(Jra55):
                ,"sst"  :"BRTMP"
                ,"topo" :"topo"
                ,"land" :"land"
+               ,"pwat" :"PWAT"
                }
 
     def Load_6hrPlev(self, var, DTime, plev):

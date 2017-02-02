@@ -4,6 +4,15 @@ import os, sys
 import Reanalysis
 import socket
 
+
+def read_txtlist(iname):
+  f = open(iname, "r")
+  lines = f.readlines()
+  f.close()
+  lines = map(float, lines)
+  aout  = array(lines, float32)
+  return aout
+
 def Check9grids(a2flag,miss_out=-9999.):
   ny,nx    = shape(a2flag)
   a2countN = r_[a2flag[0,:].reshape(1,nx),  a2flag[:-1,:]]
@@ -22,29 +31,28 @@ def Check9grids(a2flag,miss_out=-9999.):
 
 
 class MonsoonMoist(object):
-  def __init__(self, model="JRA55", res="bn", var="PWAT",miss=-9999.):
+  #def __init__(self, model="JRA55", res="bn", var="pwat",miss=-9999.):
+  def __init__(self, cfg, miss=-9999.):
     #----------------
-    hostname = socket.gethostname()
-    if hostname == "well":
-      self.rootDir  = "/media/disk2"
-    if hostname in ["mizu","naam"]:
-      self.rootDir  = "/tank/utsumi"
-    #----------------
-    self.ra = Reanalysis.Reanalysis(model="JRA55",res="bn")
+    self.prj   = cfg["prj"  ]
+    self.model = cfg["model"]
+    self.runt  = cfg["run"  ]
+    self.res   = cfg["res"  ]
 
-    self.model  = model
-    self.res    = res
-    self.var    = var
-    self.miss   = miss
-    self.Lat    = self.ra.Lat
-    self.Lon    = self.ra.Lon
-    self.ny     = self.ra.ny
-    self.nx     = self.ra.nx
+    self.rootDir = cfg["rootDir"]
+    self.baseDir = cfg["baseDir"]
+
+    self.Lat     = read_txtlist( os.path.join(self.baseDir, "lat.txt"))
+    self.Lon     = read_txtlist( os.path.join(self.baseDir, "lon.txt"))
+    self.ny      = len(self.Lat)
+    self.nx      = len(self.Lon)
+    self.miss    = miss
+
     self.thrat  = 0.618
-    self.dPWAT  = {"JRA55":"PWAT"}
-    self.dSPFH  = {"JRA55":"spfh"}
-    self.dstypePWAT = {"JRA55":"anl_column125"}
-    self.dstypeSPFH = {"JRA55":"anl_p125"}
+    #self.dPWAT  = {"JRA55":"PWAT"}
+    #self.dSPFH  = {"JRA55":"spfh"}
+    #self.dstypePWAT = {"JRA55":"anl_column125"}
+    #self.dstypeSPFH = {"JRA55":"anl_p125"}
 
 
   def prepMonsoonMoist(self):
@@ -54,10 +62,9 @@ class MonsoonMoist(object):
       self.a2region = self.loadRegionW14(1980,1999)
 
   def pathRegionW14(self, iYear, eYear):
-    rootDir = self.rootDir
-    srcDir  = rootDir + "/out/%s/%s/const/ms.region/W14"%(self.model,self.res)
+    srcDir  = self.baseDir + "/msregion/W14"
     srcPath = srcDir  + "/region.%04d-%04d.%s"%(iYear,eYear,self.res)
-    return rootDir, srcDir, srcPath
+    return self.baseDir, srcDir, srcPath
 
   def loadRegionW14(self, iYear, eYear):
     srcPath = self.pathRegionW14(iYear, eYear)[-1]

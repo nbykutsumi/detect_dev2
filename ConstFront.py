@@ -4,6 +4,7 @@ myname = "ConstFront.py"
 
 class Const(object):
   def __init__(self, prj="JRA55", model="__",run="__", res="145x288"):
+
     if (prj,res) == ("JRA55","145x288"):
       self.thM1t = 0.30  # K/100km/100km
 #      self.thM2t = 1.4   # K/100km
@@ -28,16 +29,28 @@ class Const(object):
       self.thgrids= 5/1.25
 
     elif (prj,model,res) == ("HAPPI","MIROC5","128x256"):
-      self.thM1t = 0.30  # K/100km/100km
-#      self.thM2t = 1.4   # K/100km
-      self.thM2t = 0.6   # K/100km
+      #self.thM1t = 0.30      # K/100km/100km
+      self.thM1t = 0.30*0.8  # K/100km/100km, Tuned
+      self.thM2t = 0.6       # K/100km
 
       self.thM1q = 2.3*1.0e-4   # temporary 
       self.thM2q = 0.9*1.0e-3   # temporary 
       self.thgrids= 5/1.25
 
+      #lrun = run.split("-")
+      #if len(lrun) ==5:
+      #  tune1 = float(lrun[3])*0.01
+      #  tune2 = float(lrun[4])*0.01
+      #  self.thM1t = self.thM1t * tune1
+      #  self.thM2t = self.thM2t * tune2
+      #  print "*"*50
+      #  print "tuned!!"
+      #  print "M1t=",self.thM1t
+      #  print "M2t=",self.thM2t
+
+
     else:
-      print myname,":check model,res",model,res
+      print myname,":check prj,model,res",prj,model,res
       sys.exit()
 
     #-- orog --

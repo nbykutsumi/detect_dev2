@@ -1,6 +1,6 @@
 from numpy import *
 from mpl_toolkits.basemap import Basemap
-import util
+import myfunc.util as util
 import matplotlib.pyplot as plt
 import sys
 ##-------------------------------
